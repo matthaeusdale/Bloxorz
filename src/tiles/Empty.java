@@ -2,15 +2,16 @@ package tiles;
 
 import java.awt.Color;
 
-public class Solid extends Tile {
+public class Empty extends Tile {
 
 	@Override
 	public Color getColor() {
-		return Color.GRAY;
+		return Color.BLACK;
 	}
 
 	@Override
 	public String toString() {
-		return "S";
+		return "E";
 	}
+
 }

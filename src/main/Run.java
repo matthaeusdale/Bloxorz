@@ -1,4 +1,5 @@
 package main;
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -14,8 +15,9 @@ public class Run {
 	public static void main(String[] args) {
 		new Run();
 	}
+
 	public Run() {
-		//MainMenu main= new MainMenu(this);
+		// MainMenu main= new MainMenu(this);
 		frame = new JFrame("Bloxorz");
 		Stage testStage = new testStage(this);
 		frame.getContentPane().add(testStage);
@@ -24,9 +26,9 @@ public class Run {
 		frame.pack();
 		frame.setSize(850, 850);
 		frame.setLocationRelativeTo(null);
-		frame.setResizable(false);
+		// frame.setResizable(false);
 	}
-	
+
 	public JFrame getFrame() {
 		return frame;
 	}

@@ -1,8 +1,10 @@
 package levels;
 
 import java.awt.Color;
+
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.List;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,6 +13,10 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import javax.swing.JFrame;
 
@@ -22,6 +28,9 @@ public class testStage extends Stage implements MouseListener, MouseMotionListen
 
 	Run game;
 	final int TILE_WIDTH = 30;
+	int spawnX = 10;
+	int spawnY = 10;
+	boolean testing = false;
 
 	public testStage(Run game) {
 		initStage();
@@ -48,6 +57,31 @@ public class testStage extends Stage implements MouseListener, MouseMotionListen
 					block.moveBlock("Left");
 				} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
 					block.moveBlock("Down");
+				} else if (e.getKeyCode() == KeyEvent.VK_1) {
+					try {
+						setBoard("stages\\level1.txt");
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				} else if (e.getKeyCode() == KeyEvent.VK_2) {
+					try {
+						setBoard("stages\\level2.txt");
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+
+				} else if (e.getKeyCode() == KeyEvent.VK_3) {
+					try {
+						setBoard("stages\\level3.txt");
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				} else if (e.getKeyCode() == KeyEvent.VK_P) {
+					printBoardToConsole();
+				} else if (e.getKeyCode() == KeyEvent.VK_R) {
+					initStage();
+				} else if (e.getKeyCode() == KeyEvent.VK_T) {
+					testing = !testing;
 				}
 				checkStatus();
 				repaint();
@@ -57,7 +91,6 @@ public class testStage extends Stage implements MouseListener, MouseMotionListen
 			public void keyReleased(KeyEvent e) {
 
 			}
-
 		});
 	}
 
@@ -70,7 +103,7 @@ public class testStage extends Stage implements MouseListener, MouseMotionListen
 
 				switch (shit) {
 				case 0:
-					tiles[i][j] = new Space();
+					tiles[i][j] = new Empty();
 					break;
 				case 1:
 					tiles[i][j] = new Solid();
@@ -90,7 +123,8 @@ public class testStage extends Stage implements MouseListener, MouseMotionListen
 				}
 			}
 		}
-		this.block = new Block("Up", 9, 11);
+		tiles[10][10] = new Solid();
+		this.block = new Block("Up", 10, 10);
 	}
 
 	@Override
@@ -108,14 +142,28 @@ public class testStage extends Stage implements MouseListener, MouseMotionListen
 		Tile t = tiles[x][y];
 		if (pos.equals("Up") && t instanceof Hole) {
 			System.out.println("won");
-		} else if (pos.equals("Up") && t instanceof Orange || t instanceof Space) {
+			if (!testing) {
+				respawn();
+				initStage();
+			}
+		} else if (pos.equals("Up") && t instanceof Orange || t instanceof Empty) {
 			System.out.println("lose up");
+			if (!testing) {
+				respawn();
+			}
 		} else if (!pos.equals("Up")) {
 			Tile t2 = pos.equals("Vertical") ? tiles[x][y + 1] : tiles[x + 1][y];
-			if (t instanceof Space || t2 instanceof Space) {
+			if (t instanceof Empty || t2 instanceof Empty) {
 				System.out.println("lose space");
+				if (!testing) {
+					respawn();
+				}
 			}
 		}
+	}
+
+	private void respawn() {
+		this.block = new Block("Up", spawnX, spawnY);
 	}
 
 	public void printBlock(Graphics2D g2) {
@@ -135,6 +183,7 @@ public class testStage extends Stage implements MouseListener, MouseMotionListen
 	public void printBoard(Graphics g2) {
 		for (int i = 0; i < SIZE; i++) {
 			for (int j = 0; j < SIZE; j++) {
+
 				g2.setColor(tiles[i][j].getColor());
 				g2.fillRect(i * TILE_WIDTH, j * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
 				g2.setColor(Color.black);
@@ -145,8 +194,81 @@ public class testStage extends Stage implements MouseListener, MouseMotionListen
 		}
 	}
 
+	public void setBoard(String fileName) throws IOException {
+
+//		try {
+//			inputStream = new FileReader(fileName);
+//
+//			int c, count = 0, lines = 0;
+//			while ((c = inputStream.read()) != -1) {
+//				switch ((char) c) {
+//				case 'E':
+//					tiles[lines][count] = new Empty();
+//					break;
+//				case 'H':
+//					tiles[lines][count] = new Hole();
+//					break;
+//				case 'O':
+//					tiles[lines][count] = new Orange();
+//					break;
+//				case 'S':
+//					tiles[lines][count] = new Solid();
+//					break;
+//				case 'B':
+//					this.block = new Block("Up", count, lines);
+//					break;
+//				case 10:
+//					count = 0;
+//					lines++;
+//					break;
+//				default:
+//					System.out.println("Invalid character: " + c);
+//				}
+//			}
+//			printBoardToConsole();
+//		} finally {
+//			if (inputStream != null) {
+//				inputStream.close();
+//			}
+//		}
+		try {
+			List<String> lines = Files.readAllLines(Paths.get(fileName));
+
+			for (int i = 0; i < lines.size(); i++) {
+				char[] row = lines.get(i).toCharArray();
+				for (int j = 0; j < row.length; j++) {
+					char block = row[j];
+					if (block == 'E') {
+						tiles[j][i] = new Empty();
+					} else if (block == 'H') {
+						tiles[j][i] = new Hole();
+					} else if (block == 'O') {
+						tiles[j][i] = new Orange();
+					} else if (block == 'S') {
+						tiles[j][i] = new Solid();
+					} else if (block == 'B') {
+						this.block = new Block("Up", i, j);
+						tiles[j][i] = new Solid();
+					}
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void printBoardToConsole() {
+		for (int i = 0; i < SIZE; i++) {
+			for (int j = 0; j < SIZE; j++) {
+				System.out.print(tiles[j][i]);
+			}
+			System.out.println();
+		}
+	}
+
 	private void drawTile(int i, int j, Color color, Graphics g2) {
 		g2.setColor(color);
+
 		int[] xPoints = { i * TILE_WIDTH, i * TILE_WIDTH, (i + 1) * TILE_WIDTH, (i + 1) * TILE_WIDTH };
 		int[] yPoints = { j * (TILE_WIDTH / 2), (j + 1) * (TILE_WIDTH / 2), (j + 1) * (TILE_WIDTH / 2),
 				j * (TILE_WIDTH / 2) };
