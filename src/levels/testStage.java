@@ -21,7 +21,7 @@ import block.*;
 public class testStage extends Stage implements MouseListener, MouseMotionListener, ActionListener {
 
 	Run game;
-	final int TILE_WIDTH = 40;
+	final int TILE_WIDTH = 30;
 
 	public testStage(Run game) {
 		initStage();
@@ -108,10 +108,13 @@ public class testStage extends Stage implements MouseListener, MouseMotionListen
 		Tile t = tiles[x][y];
 		if (pos.equals("Up") && t instanceof Hole) {
 			System.out.println("won");
-		} else if (pos.equals("Up") && t instanceof Orange) {
-			System.out.println("lose");
-		} else if (true) {
-
+		} else if (pos.equals("Up") && t instanceof Orange || t instanceof Space) {
+			System.out.println("lose up");
+		} else if (!pos.equals("Up")) {
+			Tile t2 = pos.equals("Vertical") ? tiles[x][y + 1] : tiles[x + 1][y];
+			if (t instanceof Space || t2 instanceof Space) {
+				System.out.println("lose space");
+			}
 		}
 	}
 
@@ -133,10 +136,11 @@ public class testStage extends Stage implements MouseListener, MouseMotionListen
 		for (int i = 0; i < SIZE; i++) {
 			for (int j = 0; j < SIZE; j++) {
 				g2.setColor(tiles[i][j].getColor());
-				//drawTile(i, j, tiles[i][j].getColor(), g2);
 				g2.fillRect(i * TILE_WIDTH, j * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
 				g2.setColor(Color.black);
 				g2.drawRect(i * TILE_WIDTH, j * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
+
+				// drawTile(i, j, tiles[i][j].getColor(), g2);
 			}
 		}
 	}
@@ -147,10 +151,13 @@ public class testStage extends Stage implements MouseListener, MouseMotionListen
 		int[] yPoints = { j * (TILE_WIDTH / 2), (j + 1) * (TILE_WIDTH / 2), (j + 1) * (TILE_WIDTH / 2),
 				j * (TILE_WIDTH / 2) };
 		for (int m = 0; m < 4; m++) {
-			xPoints[m] = (int) (Math.sin((180 * 45)/ (2 * Math.PI) ) * xPoints[m] + 400);
-			
-			yPoints[m] = (int) (Math.sin((180 * 45)/ (2 * Math.PI) ) * yPoints[m]);
-			System.out.println("x: " + xPoints[m] + "y: " + yPoints[m]);
+			int oldX = xPoints[m];
+			int oldY = yPoints[m];
+			double angle = Math.PI / 4;
+			xPoints[m] = (int) ((oldX * Math.cos(angle)) - (oldY * Math.sin(angle)));
+			xPoints[m] = (int) ((oldX * Math.sin(angle)) + (oldY * Math.cos(angle)));
+
+			// System.out.println("x: " + xPoints[m] + "y: " + yPoints[m]);
 		}
 		g2.fillPolygon(xPoints, yPoints, 4);
 		g2.setColor(Color.black);
