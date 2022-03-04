@@ -169,29 +169,128 @@ public class testStage extends Stage implements MouseListener, MouseMotionListen
 	public void printBlock(Graphics2D g2) {
 		int x = this.block.getX();
 		int y = this.block.getY();
+		int startingX = (int) ((Math.cos(Math.PI / 18) * TILE_WIDTH * x) + (Math.sin(Math.PI / 6) *
+				TILE_HEIGHT * y));
+		int startingY = (int) ((Math.cos(Math.PI / 6) * TILE_HEIGHT * y) - (Math.sin(Math.PI / 18) *
+				TILE_WIDTH * x)) + 60;
 		String position = this.block.getPosition();
 		g2.setColor(Color.BLUE);
 		if (position.equals("Up")) {
-			g2.fill3DRect(TILE_WIDTH * x, TILE_WIDTH * y, TILE_WIDTH, TILE_WIDTH, true);
+			printBlockAux(g2, startingX, startingY, 1);
+			// g2.fill3DRect(TILE_WIDTH * x, TILE_WIDTH * y, TILE_WIDTH, TILE_WIDTH, true);
 		} else if (position.equals("Horizontal")) {
-			g2.fill3DRect(TILE_WIDTH * x, TILE_WIDTH * y, TILE_WIDTH * 2, TILE_WIDTH, true);
+			// g2.fill3DRect(TILE_WIDTH * x, TILE_WIDTH * y, TILE_WIDTH * 2, TILE_WIDTH,
+			// true);
+			printBlockAux(g2, startingX, startingY, 2);
 		} else {
-			g2.fill3DRect(TILE_WIDTH * x, TILE_WIDTH * y, TILE_WIDTH, TILE_WIDTH * 2, true);
+			// g2.fill3DRect(TILE_WIDTH * x, TILE_WIDTH * y, TILE_WIDTH, TILE_WIDTH * 2,
+			// true);
+			printBlockAux(g2, startingX, startingY, 3);
 		}
 	}
+
+	public void printBlockAux(Graphics2D g2, int startingX, int startingY, int position) {
+		if (position == 1) { // up
+			int[] xPoints = { 0, 0,
+					(int) (Math.cos(Math.PI / 18) * TILE_WIDTH),
+					(int) ((Math.cos(Math.PI / 18) * TILE_WIDTH) + (Math.sin(Math.PI / 6) * TILE_HEIGHT)),
+					(int) ((Math.cos(Math.PI / 18) * TILE_WIDTH) + (Math.sin(Math.PI / 6) * TILE_HEIGHT)),
+					(int) (Math.sin(Math.PI / 6) * TILE_HEIGHT) };
+			int[] yPoints = { 0, -2 * TILE_HEIGHT,
+					(int) -((Math.sin(Math.PI / 18) * TILE_WIDTH) + 1) - 2 * TILE_HEIGHT,
+					(int) ((Math.cos(Math.PI / 6) * TILE_HEIGHT) - (Math.sin(Math.PI / 18) * TILE_WIDTH))
+							- 2 * TILE_HEIGHT,
+					(int) ((Math.cos(Math.PI / 6) * TILE_HEIGHT) - (Math.sin(Math.PI / 18) * TILE_WIDTH)),
+					(int) (Math.cos(Math.PI / 6) * TILE_HEIGHT) };
+			for (int m = 0; m < 6; m++) {
+				xPoints[m] = xPoints[m] + startingX;
+				yPoints[m] = yPoints[m] + startingY;
+			}
+			g2.fillPolygon(xPoints, yPoints, 6);
+		} else if (position == 2) { // horizontal
+			int[] xPoints = { 0, 0,
+					(int) (Math.cos(Math.PI / 18) * TILE_WIDTH) * 2,
+					(int) ((Math.cos(Math.PI / 18) * TILE_WIDTH) * 2 + (Math.sin(Math.PI / 6) * TILE_HEIGHT)),
+					(int) ((Math.cos(Math.PI / 18) * TILE_WIDTH) * 2 + (Math.sin(Math.PI / 6) * TILE_HEIGHT)),
+					(int) (Math.sin(Math.PI / 6) * TILE_HEIGHT) };
+			int[] yPoints = { 0, -1 * TILE_HEIGHT,
+					(int) -((Math.sin(Math.PI / 18) * TILE_WIDTH) * 2 + 1) - 1 * TILE_HEIGHT,
+					(int) ((Math.cos(Math.PI / 6) * TILE_HEIGHT) - (Math.sin(Math.PI / 18) * TILE_WIDTH))
+							- 1 * TILE_HEIGHT,
+					(int) ((Math.cos(Math.PI / 6) * TILE_HEIGHT) - (Math.sin(Math.PI / 18) * TILE_WIDTH) * 2),
+					(int) (Math.cos(Math.PI / 6) * TILE_HEIGHT) };
+			for (int m = 0; m < 6; m++) {
+				xPoints[m] = xPoints[m] + startingX;
+				yPoints[m] = yPoints[m] + startingY;
+			}
+			g2.fillPolygon(xPoints, yPoints, 6);
+		} else { // vertical
+			int[] xPoints = { 0, 0,
+					(int) (Math.cos(Math.PI / 18) * TILE_WIDTH),
+					(int) ((Math.cos(Math.PI / 18) * TILE_WIDTH) + (Math.sin(Math.PI / 6) * TILE_HEIGHT) * 2),
+					(int) ((Math.cos(Math.PI / 18) * TILE_WIDTH) + (Math.sin(Math.PI / 6) * TILE_HEIGHT) * 2),
+					(int) (Math.sin(Math.PI / 6) * TILE_HEIGHT) * 2 };
+			int[] yPoints = { 0, -1 * TILE_HEIGHT,
+					(int) -((Math.sin(Math.PI / 18) * TILE_WIDTH) + 1) - 1 * TILE_HEIGHT,
+					(int) (((Math.cos(Math.PI / 6) * TILE_HEIGHT) * 2) - (Math.sin(Math.PI / 18) * TILE_WIDTH)
+							- 1 * TILE_HEIGHT),
+					(int) ((Math.cos(Math.PI / 6) * TILE_HEIGHT) * 2 - (Math.sin(Math.PI / 18) * TILE_WIDTH)),
+					(int) (Math.cos(Math.PI / 6) * TILE_HEIGHT) * 2 };
+			for (int m = 0; m < 6; m++) {
+				xPoints[m] = xPoints[m] + startingX;
+				yPoints[m] = yPoints[m] + startingY;
+			}
+			g2.fillPolygon(xPoints, yPoints, 6);
+		}
+	}
+
 
 	public void printBoard(Graphics g2) {
 		for (int i = 0; i < SIZE; i++) {
 			for (int j = 0; j < SIZE; j++) {
-
 				g2.setColor(tiles[i][j].getColor());
-				g2.fillRect(i * TILE_WIDTH, j * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
-				g2.setColor(Color.black);
-				g2.drawRect(i * TILE_WIDTH, j * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
-
-				// drawTile(i, j, tiles[i][j].getColor(), g2);
+				drawTile(i, j, tiles[i][j].getColor(), g2);
+				// g2.fillRect(i * TILE_WIDTH, j * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
+				// g2.setColor(Color.black);
+				// g2.drawRect(i * TILE_WIDTH, j * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
 			}
 		}
+	}
+
+	private void drawTile(int x, int y, Color color, Graphics g2) {
+		g2.setColor(color);
+		int startingX = (int) ((Math.cos(Math.PI / 18) * TILE_WIDTH * x) + (Math.sin(Math.PI / 6) *
+				TILE_HEIGHT * y));
+		int startingY = (int) ((Math.cos(Math.PI / 6) * TILE_HEIGHT * y) - (Math.sin(Math.PI / 18) *
+				TILE_WIDTH * x)) + 60;
+		/*
+		 * int[] xPoints = { i * TILE_WIDTH, i * TILE_WIDTH, (i + 1) * TILE_WIDTH, (i +
+		 * 1) * TILE_WIDTH };
+		 * int[] yPoints = { j * (TILE_WIDTH / 2), (j + 1) * (TILE_WIDTH / 2), (j + 1) *
+		 * (TILE_WIDTH / 2),
+		 * j * (TILE_WIDTH / 2) };
+		 */
+		int[] xPoints = { 0,
+				(int) (Math.cos(Math.PI / 18) * TILE_WIDTH),
+				(int) ((Math.cos(Math.PI / 18) * TILE_WIDTH) + (Math.sin(Math.PI / 6) * TILE_HEIGHT)),
+				(int) (Math.sin(Math.PI / 6) * TILE_HEIGHT) };
+		int[] yPoints = { 0,
+				(int) -((Math.sin(Math.PI / 18) * TILE_WIDTH) + 1),
+				(int) ((Math.cos(Math.PI / 6) * TILE_HEIGHT) - (Math.sin(Math.PI / 18) * TILE_WIDTH)),
+				(int) (Math.cos(Math.PI / 6) * TILE_HEIGHT) };
+		for (int m = 0; m < 4; m++) {
+			/*
+			 * xPoints[m] = (int) (Math.sin((180 * 45) / (2 * Math.PI)) * xPoints[m] + 400);
+			 * yPoints[m] = (int) (Math.sin((180 * 45) / (2 * Math.PI)) * yPoints[m]);
+			 */
+			xPoints[m] = xPoints[m] + startingX;
+			yPoints[m] = yPoints[m] + startingY;
+			// System.out.println("x: " + xPoints[m] + "y: " + yPoints[m]);
+		}
+		g2.fillPolygon(xPoints, yPoints, 4);
+		g2.setColor(Color.black);
+		g2.drawPolygon(xPoints, yPoints, 4);
+
 	}
 
 	public void setBoard(String fileName) throws IOException {
@@ -264,27 +363,6 @@ public class testStage extends Stage implements MouseListener, MouseMotionListen
 			}
 			System.out.println();
 		}
-	}
-
-	private void drawTile(int i, int j, Color color, Graphics g2) {
-		g2.setColor(color);
-
-		int[] xPoints = { i * TILE_WIDTH, i * TILE_WIDTH, (i + 1) * TILE_WIDTH, (i + 1) * TILE_WIDTH };
-		int[] yPoints = { j * (TILE_WIDTH / 2), (j + 1) * (TILE_WIDTH / 2), (j + 1) * (TILE_WIDTH / 2),
-				j * (TILE_WIDTH / 2) };
-		for (int m = 0; m < 4; m++) {
-			int oldX = xPoints[m];
-			int oldY = yPoints[m];
-			double angle = Math.PI / 4;
-			xPoints[m] = (int) ((oldX * Math.cos(angle)) - (oldY * Math.sin(angle)));
-			xPoints[m] = (int) ((oldX * Math.sin(angle)) + (oldY * Math.cos(angle)));
-
-			// System.out.println("x: " + xPoints[m] + "y: " + yPoints[m]);
-		}
-		g2.fillPolygon(xPoints, yPoints, 4);
-		g2.setColor(Color.black);
-		g2.drawPolygon(xPoints, yPoints, 4);
-
 	}
 
 	@Override
