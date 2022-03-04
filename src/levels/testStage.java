@@ -21,7 +21,7 @@ import block.*;
 public class testStage extends Stage implements MouseListener, MouseMotionListener, ActionListener {
 
 	Run game;
-	final int TILE_WIDTH = 30;
+	final int TILE_WIDTH = 40;
 
 	public testStage(Run game) {
 		initStage();
@@ -133,10 +133,10 @@ public class testStage extends Stage implements MouseListener, MouseMotionListen
 		for (int i = 0; i < SIZE; i++) {
 			for (int j = 0; j < SIZE; j++) {
 				g2.setColor(tiles[i][j].getColor());
-				drawTile(i, j, tiles[i][j].getColor(), g2);
-				// g2.fillRect(i * TILE_WIDTH, j * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
+				//drawTile(i, j, tiles[i][j].getColor(), g2);
+				g2.fillRect(i * TILE_WIDTH, j * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
 				g2.setColor(Color.black);
-				//g2.drawRect(i * TILE_WIDTH, j * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
+				g2.drawRect(i * TILE_WIDTH, j * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
 			}
 		}
 	}
