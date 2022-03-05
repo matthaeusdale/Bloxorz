@@ -21,52 +21,13 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-public class MainMenu extends JPanel implements MouseListener, MouseMotionListener, ActionListener {
+public class MainMenu extends JPanel {
 	Run game;
 
 	MainMenu(Run game) {
-		addMouseListener(this);
-		addMouseMotionListener(this);
 		setBackground(Color.black);
 		setVisible(true);
 		this.game = game;
-	}
-
-	public void actionPerformed(ActionEvent e) {
-	}
-
-	public void mouseDragged(MouseEvent e) {
-	}
-
-	public void mouseMoved(MouseEvent e) {
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-	}
-
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		Graphics2D g2 = (Graphics2D) g;
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setColor(Color.GREEN);
-		g2.drawRect(40, 40, 40, 40);
 	}
 
 }

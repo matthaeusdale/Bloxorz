@@ -6,8 +6,15 @@ public class Orange extends Tile {
 
 	@Override
 	public Color getColor() {
-		// TODO Auto-generated method stub
 		return Color.ORANGE;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "O";
+	}
+	@Override
+	public boolean equals(Tile anotherTile) {
+		return anotherTile instanceof Orange;
+	}
 }

@@ -2,21 +2,21 @@ package tiles;
 
 import java.awt.Color;
 
-public class Hole extends Tile {
+public class Empty extends Tile {
 
 	@Override
 	public Color getColor() {
-		return Color.red;
+		return Color.BLACK;
 	}
 
 	@Override
 	public String toString() {
-		return "H";
+		return "E";
 	}
-	
+
 	@Override
 	public boolean equals(Tile anotherTile) {
-		return anotherTile instanceof Hole;
+		return anotherTile instanceof Empty;
 	}
 
 }
