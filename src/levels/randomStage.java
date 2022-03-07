@@ -4,9 +4,7 @@ import java.awt.Color;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,20 +23,21 @@ import block.*;
 
 public class randomStage extends Stage implements MouseListener, MouseMotionListener, ActionListener {
 
-	final int TILE_HEIGHT = 35, TILE_WIDTH = 40;
+	final int TILE_HEIGHT = 35, TILE_WIDTH = 40, Y_OFFSET = 140, X_OFFSET = -40, SLAB_HEIGHT = 15;
 	int sub = 3;
 	int spawnX;
 	int spawnY;
 	Run game;
 	boolean testing = false;
 	int shortest = Integer.MAX_VALUE;
+	long startTime;
 	String shortestPath;
 
 	public randomStage(Run game) {
 		initStage();
 		addMouseListener(this);
 		addMouseMotionListener(this);
-		setBackground(Color.black);
+		// setBackground(Color.black);
 		setVisible(true);
 		this.game = game;
 		game.getFrame().addKeyListener(new KeyListener() {
@@ -79,7 +78,6 @@ public class randomStage extends Stage implements MouseListener, MouseMotionList
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-
 			}
 		});
 	}
@@ -122,11 +120,33 @@ public class randomStage extends Stage implements MouseListener, MouseMotionList
 		this.block = new Block("Up", 20, 20);
 		spawnX = 20;
 		spawnY = 20;
+		while (purge())
+			;
+
 		solvable();
 		if (!solvable()) {
 			System.out.println("unsolvable");
 			initStage();
 		}
+	}
+
+	private boolean purge() {
+		boolean purged = false;
+		for (int i = 0; i < SIZE; i++) {
+			for (int j = 0; j < SIZE; j++) {
+				if (!(tiles[i][j] instanceof Empty)) {
+					int up = (tiles[i][j - 1] instanceof Empty) ? 1 : 0;
+					int down = (tiles[i][j + 1] instanceof Empty) ? 1 : 0;
+					int right = (tiles[i + 1][j] instanceof Empty) ? 1 : 0;
+					int left = (tiles[i - 1][j] instanceof Empty) ? 1 : 0;
+					if (up + down + left + right >= 3) {
+						tiles[i][j] = new Empty();
+						purged = true;
+					}
+				}
+			}
+		}
+		return purged;
 	}
 
 	private boolean padHole(int num) {
@@ -150,21 +170,25 @@ public class randomStage extends Stage implements MouseListener, MouseMotionList
 	public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setColor(Color.gray);
+		g2.setColor(Color.BLACK);
+		g2.fillRect(0, 0, game.WIDTH, game.HEIGHT);
 		printBoard(g2);
 		printBlock(g2);
 	}
 
 	private boolean solvable() {
-		long start = System.currentTimeMillis();
+		startTime = System.currentTimeMillis();
 		boolean solvable = solvable(new Block(block), new Block[1], 0);
 		long end = System.currentTimeMillis();
-		System.out.println(end - start);
+		System.out.println(end - startTime);
+//		if (end - startTime > 4000) {
+//			return true;
+//		}
 		return solvable;
 	}
 
 	private boolean solvable(Block oldPlayer, Block[] prevStates, int length) {
-		if (length > 40) {
+		if (length > 40 || (System.currentTimeMillis() - startTime) > 1000) {
 			// System.out.println(">40");
 			return false;
 		}
@@ -203,7 +227,7 @@ public class randomStage extends Stage implements MouseListener, MouseMotionList
 	}
 
 	private boolean fastestPath(Block oldPlayer, Block[] prevStates, String path, int length) {
-		if (length > shortest || length > 40) {
+		if (length > shortest || length > 30) {
 			return false;
 		}
 		Block player = new Block(oldPlayer);
@@ -309,11 +333,12 @@ public class randomStage extends Stage implements MouseListener, MouseMotionList
 	public void printBlock(Graphics2D g2) {
 		int x = this.block.getX();
 		int y = this.block.getY();
-		int startingX = (int) ((Math.cos(Math.PI / 18) * TILE_WIDTH * x) + (Math.sin(Math.PI / 6) * TILE_HEIGHT * y));
+		int startingX = (int) ((Math.cos(Math.PI / 18) * TILE_WIDTH * x) + (Math.sin(Math.PI / 6) * TILE_HEIGHT * y))
+				+ X_OFFSET;
 		int startingY = (int) ((Math.cos(Math.PI / 6) * TILE_HEIGHT * y) - (Math.sin(Math.PI / 18) * TILE_WIDTH * x))
-				+ 60;
+				+ Y_OFFSET;
 		String position = this.block.getPosition();
-		g2.setColor(Color.BLUE);
+		g2.setColor(Color.cyan);
 		if (position.equals("Up")) {
 			printBlockAux(g2, startingX, startingY, 1);
 			// g2.fill3DRect(TILE_WIDTH * x, TILE_WIDTH * y, TILE_WIDTH, TILE_WIDTH, true);
@@ -330,13 +355,11 @@ public class randomStage extends Stage implements MouseListener, MouseMotionList
 
 	public void printBlockAux(Graphics2D g2, int startingX, int startingY, int position) {
 		if (position == 1) { // up
-			int[] xPoints = { 0, 0,
-					(int) (Math.cos(Math.PI / 18) * TILE_WIDTH),
+			int[] xPoints = { 0, 0, (int) (Math.cos(Math.PI / 18) * TILE_WIDTH),
 					(int) ((Math.cos(Math.PI / 18) * TILE_WIDTH) + (Math.sin(Math.PI / 6) * TILE_HEIGHT)),
 					(int) ((Math.cos(Math.PI / 18) * TILE_WIDTH) + (Math.sin(Math.PI / 6) * TILE_HEIGHT)),
 					(int) (Math.sin(Math.PI / 6) * TILE_HEIGHT) };
-			int[] yPoints = { 0, -2 * TILE_HEIGHT,
-					(int) -((Math.sin(Math.PI / 18) * TILE_WIDTH) + 1) - 2 * TILE_HEIGHT,
+			int[] yPoints = { 0, -2 * TILE_HEIGHT, (int) -((Math.sin(Math.PI / 18) * TILE_WIDTH) + 1) - 2 * TILE_HEIGHT,
 					(int) ((Math.cos(Math.PI / 6) * TILE_HEIGHT) - (Math.sin(Math.PI / 18) * TILE_WIDTH))
 							- 2 * TILE_HEIGHT,
 					(int) ((Math.cos(Math.PI / 6) * TILE_HEIGHT) - (Math.sin(Math.PI / 18) * TILE_WIDTH)),
@@ -362,8 +385,7 @@ public class randomStage extends Stage implements MouseListener, MouseMotionList
 					(int) (Math.cos(Math.PI / 6) * TILE_HEIGHT) - 2 * TILE_HEIGHT + startingY);
 			g2.drawPolygon(xPoints, yPoints, 6);
 		} else if (position == 2) { // horizontal
-			int[] xPoints = { 0, 0,
-					(int) (Math.cos(Math.PI / 18) * TILE_WIDTH) * 2,
+			int[] xPoints = { 0, 0, (int) (Math.cos(Math.PI / 18) * TILE_WIDTH) * 2,
 					(int) ((Math.cos(Math.PI / 18) * TILE_WIDTH) * 2 + (Math.sin(Math.PI / 6) * TILE_HEIGHT)),
 					(int) ((Math.cos(Math.PI / 18) * TILE_WIDTH) * 2 + (Math.sin(Math.PI / 6) * TILE_HEIGHT)),
 					(int) (Math.sin(Math.PI / 6) * TILE_HEIGHT) };
@@ -396,13 +418,11 @@ public class randomStage extends Stage implements MouseListener, MouseMotionList
 					(int) (Math.cos(Math.PI / 6) * TILE_HEIGHT) - TILE_HEIGHT + startingY);
 			g2.drawPolygon(xPoints, yPoints, 6);
 		} else { // vertical
-			int[] xPoints = { 0, 0,
-					(int) (Math.cos(Math.PI / 18) * TILE_WIDTH),
+			int[] xPoints = { 0, 0, (int) (Math.cos(Math.PI / 18) * TILE_WIDTH),
 					(int) ((Math.cos(Math.PI / 18) * TILE_WIDTH) + (Math.sin(Math.PI / 6) * TILE_HEIGHT) * 2),
 					(int) ((Math.cos(Math.PI / 18) * TILE_WIDTH) + (Math.sin(Math.PI / 6) * TILE_HEIGHT) * 2),
 					(int) (Math.sin(Math.PI / 6) * TILE_HEIGHT) * 2 };
-			int[] yPoints = { 0, -1 * TILE_HEIGHT,
-					(int) -((Math.sin(Math.PI / 18) * TILE_WIDTH) + 1) - 1 * TILE_HEIGHT,
+			int[] yPoints = { 0, -1 * TILE_HEIGHT, (int) -((Math.sin(Math.PI / 18) * TILE_WIDTH) + 1) - 1 * TILE_HEIGHT,
 					(int) (((Math.cos(Math.PI / 6) * TILE_HEIGHT) * 2) - (Math.sin(Math.PI / 18) * TILE_WIDTH)
 							- 1 * TILE_HEIGHT),
 					(int) ((Math.cos(Math.PI / 6) * TILE_HEIGHT) * 2 - (Math.sin(Math.PI / 18) * TILE_WIDTH)),
@@ -418,9 +438,8 @@ public class randomStage extends Stage implements MouseListener, MouseMotionList
 			g2.drawLine(
 					startingX
 							+ (int) ((Math.cos(Math.PI / 18) * TILE_WIDTH) + (Math.sin(Math.PI / 6) * TILE_HEIGHT) * 2),
-					startingY
-							+ (int) (((Math.cos(Math.PI / 6) * TILE_HEIGHT) * 2) - (Math.sin(Math.PI / 18) * TILE_WIDTH)
-									- 1 * TILE_HEIGHT),
+					startingY + (int) (((Math.cos(Math.PI / 6) * TILE_HEIGHT) * 2)
+							- (Math.sin(Math.PI / 18) * TILE_WIDTH) - 1 * TILE_HEIGHT),
 					startingX + (int) (Math.sin(Math.PI / 6) * TILE_HEIGHT) * 2,
 					startingY + (int) (Math.cos(Math.PI / 6) * TILE_HEIGHT) * 2 - TILE_HEIGHT);
 			g2.drawLine(startingX + (int) (Math.sin(Math.PI / 6) * TILE_HEIGHT) * 2,
@@ -432,16 +451,18 @@ public class randomStage extends Stage implements MouseListener, MouseMotionList
 	}
 
 	public void printBoard(Graphics g2) {
-		for (int i = 0; i < SIZE; i++) {
+		for (int i = SIZE - 1; i >= 0; i--) {
 			for (int j = 0; j < SIZE; j++) {
-				g2.setColor(tiles[i][j].getColor());
-				drawTile(i, j, tiles[i][j].getColor(), g2);
+				if (!(tiles[i][j] instanceof Empty)) {
+					g2.setColor(tiles[i][j].getColor());
+					drawTile(i, j, tiles[i][j].getColor(), g2);
 //				g2.setColor(tiles[i][j].getColor());
 //				g2.fillRect(i * TILE_WIDTH, j * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
 //				g2.setColor(Color.black);
 //				g2.drawRect(i * TILE_WIDTH, j * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
 //
 //				drawTile(i, j, tiles[i][j].getColor(), g2);
+				}
 			}
 		}
 	}
@@ -486,10 +507,12 @@ public class randomStage extends Stage implements MouseListener, MouseMotionList
 	}
 
 	private void drawTile(int x, int y, Color color, Graphics g2) {
+		int points = 12;
 		g2.setColor(color);
-		int startingX = (int) ((Math.cos(Math.PI / 18) * TILE_WIDTH * x) + (Math.sin(Math.PI / 6) * TILE_HEIGHT * y));
+		int startingX = (int) ((Math.cos(Math.PI / 18) * TILE_WIDTH * x) + (Math.sin(Math.PI / 6) * TILE_HEIGHT * y))
+				+ X_OFFSET;
 		int startingY = (int) ((Math.cos(Math.PI / 6) * TILE_HEIGHT * y) - (Math.sin(Math.PI / 18) * TILE_WIDTH * x))
-				+ 60;
+				+ Y_OFFSET;
 		/*
 		 * int[] xPoints = { i * TILE_WIDTH, i * TILE_WIDTH, (i + 1) * TILE_WIDTH, (i +
 		 * 1) * TILE_WIDTH }; int[] yPoints = { j * (TILE_WIDTH / 2), (j + 1) *
@@ -497,11 +520,37 @@ public class randomStage extends Stage implements MouseListener, MouseMotionList
 		 */
 		int[] xPoints = { 0, (int) (Math.cos(Math.PI / 18) * TILE_WIDTH),
 				(int) ((Math.cos(Math.PI / 18) * TILE_WIDTH) + (Math.sin(Math.PI / 6) * TILE_HEIGHT)),
-				(int) (Math.sin(Math.PI / 6) * TILE_HEIGHT) };
+				(int) ((Math.cos(Math.PI / 18) * TILE_WIDTH) + (Math.sin(Math.PI / 6) * TILE_HEIGHT)),
+				(int) (Math.sin(Math.PI / 6) * TILE_HEIGHT), 0 };
 		int[] yPoints = { 0, (int) -((Math.sin(Math.PI / 18) * TILE_WIDTH) + 1),
 				(int) ((Math.cos(Math.PI / 6) * TILE_HEIGHT) - (Math.sin(Math.PI / 18) * TILE_WIDTH)),
-				(int) (Math.cos(Math.PI / 6) * TILE_HEIGHT) };
-		for (int m = 0; m < 4; m++) {
+				(int) ((Math.cos(Math.PI / 6) * TILE_HEIGHT) - (Math.sin(Math.PI / 18) * TILE_WIDTH)) + SLAB_HEIGHT,
+				(int) (Math.cos(Math.PI / 6) * TILE_HEIGHT) + SLAB_HEIGHT, 0 + SLAB_HEIGHT };
+		int[] xOutline = { 0, (int) (Math.cos(Math.PI / 18) * TILE_WIDTH),
+				(int) ((Math.cos(Math.PI / 18) * TILE_WIDTH) + (Math.sin(Math.PI / 6) * TILE_HEIGHT)),
+				(int) (Math.sin(Math.PI / 6) * TILE_HEIGHT), 0, 0, (int) (Math.sin(Math.PI / 6) * TILE_HEIGHT),
+				(int) (Math.sin(Math.PI / 6) * TILE_HEIGHT), (int) (Math.sin(Math.PI / 6) * TILE_HEIGHT),
+				(int) ((Math.cos(Math.PI / 18) * TILE_WIDTH) + (Math.sin(Math.PI / 6) * TILE_HEIGHT)),
+				(int) ((Math.cos(Math.PI / 18) * TILE_WIDTH) + (Math.sin(Math.PI / 6) * TILE_HEIGHT)),
+				(int) (Math.cos(Math.PI / 18) * TILE_WIDTH), 0 };
+		int[] yOutline = { 0, (int) -((Math.sin(Math.PI / 18) * TILE_WIDTH) + 1),
+				(int) ((Math.cos(Math.PI / 6) * TILE_HEIGHT) - (Math.sin(Math.PI / 18) * TILE_WIDTH)),
+				(int) (Math.cos(Math.PI / 6) * TILE_HEIGHT), 0, SLAB_HEIGHT,
+				(int) (Math.cos(Math.PI / 6) * TILE_HEIGHT) + SLAB_HEIGHT, (int) (Math.cos(Math.PI / 6) * TILE_HEIGHT),
+				(int) (Math.cos(Math.PI / 6) * TILE_HEIGHT) + SLAB_HEIGHT,
+				(int) ((Math.cos(Math.PI / 6) * TILE_HEIGHT) - (Math.sin(Math.PI / 18) * TILE_WIDTH)) + SLAB_HEIGHT,
+				(int) ((Math.cos(Math.PI / 6) * TILE_HEIGHT) - (Math.sin(Math.PI / 18) * TILE_WIDTH)),
+				(int) -((Math.sin(Math.PI / 18) * TILE_WIDTH) + 1), 0 };
+		for (int m = 0; m < points; m++) {
+			/*
+			 * xPoints[m] = (int) (Math.sin((180 * 45) / (2 * Math.PI)) * xPoints[m] + 400);
+			 * yPoints[m] = (int) (Math.sin((180 * 45) / (2 * Math.PI)) * yPoints[m]);
+			 */
+			xOutline[m] = xOutline[m] + startingX;
+			yOutline[m] = yOutline[m] + startingY;
+			// System.out.println("x: " + xPoints[m] + "y: " + yPoints[m]);
+		}
+		for (int m = 0; m < 6; m++) {
 			/*
 			 * xPoints[m] = (int) (Math.sin((180 * 45) / (2 * Math.PI)) * xPoints[m] + 400);
 			 * yPoints[m] = (int) (Math.sin((180 * 45) / (2 * Math.PI)) * yPoints[m]);
@@ -510,9 +559,9 @@ public class randomStage extends Stage implements MouseListener, MouseMotionList
 			yPoints[m] = yPoints[m] + startingY;
 			// System.out.println("x: " + xPoints[m] + "y: " + yPoints[m]);
 		}
-		g2.fillPolygon(xPoints, yPoints, 4);
-		g2.setColor(Color.black);
-		g2.drawPolygon(xPoints, yPoints, 4);
+		g2.fillPolygon(xPoints, yPoints, 6);
+		g2.setColor(Color.DARK_GRAY);
+		g2.drawPolygon(xOutline, yOutline, points);
 
 	}
 

@@ -6,6 +6,7 @@ import levels.*;
 
 public class Run {
 	JFrame frame;
+	public final int WIDTH = 1250, HEIGHT = 1000;
 
 	public static void main(String[] args) {
 		new Run();
