@@ -2,24 +2,25 @@ package tiles;
 
 import java.awt.Color;
 
-public class Orange extends Tile {
+public class Empty extends Tile {
 
-	public Orange(int x, int y) {
+	public Empty(int x, int y) {
 		super(x, y);
 	}
 
 	@Override
 	public Color getColor() {
-		return new Color(255, 150, 0);
+		return Color.BLACK;
 	}
 
 	@Override
 	public String toString() {
-		return "O";
+		return "E";
 	}
 
 	@Override
 	public boolean equals(Object anotherTile) {
-		return anotherTile instanceof Orange;
+		return anotherTile instanceof Empty;
 	}
+
 }

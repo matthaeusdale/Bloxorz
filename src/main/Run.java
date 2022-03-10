@@ -1,33 +1,25 @@
 package main;
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 import javax.swing.*;
 
-import levels.Stage;
-import levels.testStage;
+import levels.*;
 
 public class Run {
-	JFrame frame;// = new JFrame("Run");
+	Frame frame;
+	public final int WIDTH = 1250, HEIGHT = 1000;
 
 	public static void main(String[] args) {
 		new Run();
 	}
+
 	public Run() {
-		//MainMenu main= new MainMenu(this);
-		frame = new JFrame("Bloxorz");
-		Stage testStage = new testStage(this);
-		frame.getContentPane().add(testStage);
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.pack();
-		frame.setSize(850, 850);
-		frame.setLocationRelativeTo(null);
-		frame.setResizable(false);
+		// MainMenu main= new MainMenu(this);
+		frame = new Frame("Bloxorz");
+		
+		// frame.setResizable(false);
 	}
-	
-	public JFrame getFrame() {
+
+	public Frame getFrame() {
 		return frame;
 	}
 }
