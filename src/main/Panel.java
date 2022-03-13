@@ -69,7 +69,7 @@ public class Panel extends JPanel {
 						e.printStackTrace();
 					}
 				}
-				System.out.println(stageOffset);
+				//System.out.println(stageOffset);
 				nextStage();
 				stageOffset = -1050;
 				for (int i = 0; i < 105; i++) {

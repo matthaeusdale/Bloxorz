@@ -70,7 +70,7 @@ public class Stage {
 		while (purge())
 			;
 		
-		//createButtons();
+		createButtons();
 		createBlock(x, y);
 		createHole();
 
@@ -113,7 +113,7 @@ public class Stage {
 			;
 		
 
-		//createButtons();
+		createButtons();
 		createBlock();
 		createHole();
 
