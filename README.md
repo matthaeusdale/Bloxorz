@@ -2,7 +2,7 @@
 A procedurally generated puzzle game.
 
 ## Features
-- A variety of hand-crafted and procedurally generated puzzles 
+- A variety of hand-crafted and procedurally generated levels
 - An interactive user interface implemented using the Java Swing library 
 - An optimized algorithm for solving generated puzzles with over 400 tiles in real-time 
 
