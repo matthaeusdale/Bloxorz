@@ -1,7 +1,7 @@
 # 3D Puzzle Game
 A hand-crafted and procedurally generated puzzle game with an interactive user interface.
 
-![An example of a procedurally-generated level.](https://github.com/matthaeusdale/Bloxorz/bloxorz_image.png?raw=true)
+![An example of a procedurally-generated level.](https://github.com/matthaeusdale/Bloxorz/blob/main/bloxorz_image.png?raw=true)
 
 ## Features
 - A variety of hand-crafted and procedurally generated puzzles 
