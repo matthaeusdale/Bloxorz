@@ -15,8 +15,10 @@ A procedurally generated puzzle game. Move the blue block using the arrow keys t
 
 ## Getting Started
 1. Clone the repository `git clone https://github.com/matthaeusdale/bloxorz.git`
-2. Open the project in your preferred IDE 
-3. Build and run the project 
+2. Enter the project `cd bloxorz`
+3. Ensure Java is installed with `java --version`
+4. `cd bin`
+5. Run with `java main/Run`
 
 ## Inspiration
 The inspiration for this game came from the popular online game [Logic Bloxorz](https://www.mathplayground.com/logic_bloxorz.html). I was inspired by the simple, creative, yet difficult nature of the game and decided to create my own version with new and improved features.
